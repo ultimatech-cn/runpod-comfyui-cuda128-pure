@@ -1,12 +1,63 @@
 runpod_worker_comfy:
   base_path: /runpod-volume
+  # Core model directories (ComfyUI standard)
   checkpoints: models/checkpoints/
   clip: models/clip/
   clip_vision: models/clip_vision/
   configs: models/configs/
   controlnet: models/controlnet/
+  diffusers: models/diffusers/
   embeddings: models/embeddings/
+  gligen: models/gligen/
+  hypernetworks: models/hypernetworks/
   loras: models/loras/
+  style_models: models/style_models/
+  unet: models/unet/
   upscale_models: models/upscale_models/
   vae: models/vae/
-  unet: models/unet/
+  vae_approx: models/vae_approx/
+  
+  # AnimateDiff model directories
+  animatediff_models: models/animatediff_models/
+  animatediff_motion_lora: models/animatediff_motion_lora/
+  
+  # IP-Adapter and related
+  ipadapter: models/ipadapter/
+  
+  # Face-related models
+  insightface: models/insightface/
+  facerestore_models: models/facerestore_models/
+  facedetection: models/facedetection/
+  facexlib: models/facexlib/
+  instantid: models/instantid/
+  
+  # Vision and detection models
+  photomaker: models/photomaker/
+  sams: models/sams/
+  mmdets: models/mmdets/
+  grounding-dino: models/grounding-dino/
+  depthanything: models/depthanything/
+  florence2: models/florence2/
+  BiRefNet: models/BiRefNet/
+  
+  # Video models
+  CogVideo: models/CogVideo/
+  
+  # Audio models
+  audio_encoders: models/audio_encoders/
+  
+  # BLIP models (for image captioning)
+  blip: models/blip/
+  
+  # Inpainting models
+  inpaint: models/inpaint/
+  
+  # Diffusion models (alternative location)
+  diffusion_models: models/diffusion_models/
+  
+  # Custom model directories (project-specific)
+  bagel: models/bagel/
+  Ben: models/Ben/
+  CatVTON: models/CatVTON/
+  Janus-Pro: models/Janus-Pro/
+  Flux-version-LayerDiffuse: models/Flux-version-LayerDiffuse/
