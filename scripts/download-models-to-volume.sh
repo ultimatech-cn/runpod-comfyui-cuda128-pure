@@ -318,6 +318,15 @@ if command -v python3 &> /dev/null; then
     fi
     
     if [ "$continue_section" = "true" ]; then
+        # 检查并安装 hf_transfer（如果环境启用了快速下载）
+        if [ "$HF_HUB_ENABLE_HF_TRANSFER" = "1" ] && ! python3 -c "import hf_transfer" 2>/dev/null; then
+            echo "检测到 HF_HUB_ENABLE_HF_TRANSFER=1，正在安装 hf_transfer..."
+            pip install --quiet hf_transfer 2>/dev/null || pip3 install --quiet hf_transfer 2>/dev/null || {
+                echo "⚠ hf_transfer 安装失败，禁用快速下载模式"
+                export HF_HUB_ENABLE_HF_TRANSFER=0
+            }
+        fi
+        
         echo "使用 Python transformers 下载 BLIP 模型..."
         python3 << PYTHON_SCRIPT
 from transformers import BlipProcessor, BlipForConditionalGeneration, BlipForQuestionAnswering
@@ -325,6 +334,12 @@ import os
 
 blip_cache = '$MODELS_DIR/blip'
 os.environ['HF_HUB_CACHE'] = blip_cache
+# 如果 hf_transfer 不可用，禁用快速下载
+if os.environ.get('HF_HUB_ENABLE_HF_TRANSFER') == '1':
+    try:
+        import hf_transfer
+    except ImportError:
+        os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = '0'
 
 print('下载 BLIP 图像描述模型...')
 BlipProcessor.from_pretrained('Salesforce/blip-image-captioning-base', cache_dir=blip_cache)
