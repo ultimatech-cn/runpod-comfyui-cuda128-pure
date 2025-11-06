@@ -18,13 +18,30 @@ export NUMBA_CAPTURED_ERRORS=1
 export NUMBA_DISABLE_TBB=1
 # Suppress numba compilation messages
 export NUMBA_DISABLE_JIT_WARNINGS=1
+# Disable numba's verbose type checking and SSA analysis output
+export NUMBA_DISABLE_PERFORMANCE_WARNINGS=1
+# Disable numba's internal debug prints (SSA block analysis, dispatch pc, etc.)
+export NUMBA_DEBUG_TYPEINFER=0
+export NUMBA_DEBUG_JIT=0
+export NUMBA_DEBUG_FRONTEND=0
+export NUMBA_DEBUG_BACKEND=0
+# Suppress all numba print statements by redirecting to /dev/null if needed
+# Note: This is handled in Python code via logging configuration
 
 # Set Hugging Face cache directory for BLIP and other transformers models
 # This ensures models downloaded to Network Volume are used at runtime
+# transformers library stores models in cache_dir/models--Salesforce--blip-vqa-base/ structure
+# We need to set both HF_HUB_CACHE and TRANSFORMERS_CACHE to the same directory
 if [ -d "/runpod-volume/models/blip" ]; then
     export HF_HUB_CACHE="/runpod-volume/models/blip"
     export TRANSFORMERS_CACHE="/runpod-volume/models/blip"
-    echo "worker-comfyui: Set HF_HUB_CACHE to /runpod-volume/models/blip"
+    export HF_HOME="/runpod-volume/models/blip"
+    # Also set HUGGINGFACE_HUB_CACHE for compatibility
+    export HUGGINGFACE_HUB_CACHE="/runpod-volume/models/blip"
+    echo "worker-comfyui: Set Hugging Face cache directories to /runpod-volume/models/blip"
+    echo "worker-comfyui: HF_HUB_CACHE=$HF_HUB_CACHE"
+    echo "worker-comfyui: TRANSFORMERS_CACHE=$TRANSFORMERS_CACHE"
+    echo "worker-comfyui: HF_HOME=$HF_HOME"
 fi
 
 # Ensure ComfyUI-Manager runs in offline network mode inside the container

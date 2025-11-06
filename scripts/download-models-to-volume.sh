@@ -364,7 +364,12 @@ from transformers import BlipProcessor, BlipForConditionalGeneration, BlipForQue
 import os
 
 blip_cache = '$MODELS_DIR/blip'
+# 设置所有相关的 Hugging Face 环境变量，确保下载和运行时都能找到模型
 os.environ['HF_HUB_CACHE'] = blip_cache
+os.environ['TRANSFORMERS_CACHE'] = blip_cache
+os.environ['HF_HOME'] = blip_cache
+os.environ['HUGGINGFACE_HUB_CACHE'] = blip_cache
+
 # 如果 hf_transfer 不可用，禁用快速下载
 if os.environ.get('HF_HUB_ENABLE_HF_TRANSFER') == '1':
     try:
@@ -373,14 +378,23 @@ if os.environ.get('HF_HUB_ENABLE_HF_TRANSFER') == '1':
         os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = '0'
 
 print('下载 BLIP 图像描述模型...')
-BlipProcessor.from_pretrained('Salesforce/blip-image-captioning-base', cache_dir=blip_cache)
-BlipForConditionalGeneration.from_pretrained('Salesforce/blip-image-captioning-base', cache_dir=blip_cache)
+processor_caption = BlipProcessor.from_pretrained('Salesforce/blip-image-captioning-base', cache_dir=blip_cache)
+model_caption = BlipForConditionalGeneration.from_pretrained('Salesforce/blip-image-captioning-base', cache_dir=blip_cache)
+print('✓ BLIP 图像描述模型下载完成')
 
 print('下载 BLIP VQA 模型...')
-BlipProcessor.from_pretrained('Salesforce/blip-vqa-base', cache_dir=blip_cache)
-BlipForQuestionAnswering.from_pretrained('Salesforce/blip-vqa-base', cache_dir=blip_cache)
+processor_vqa = BlipProcessor.from_pretrained('Salesforce/blip-vqa-base', cache_dir=blip_cache)
+model_vqa = BlipForQuestionAnswering.from_pretrained('Salesforce/blip-vqa-base', cache_dir=blip_cache)
+print('✓ BLIP VQA 模型下载完成')
 
-print('✓ BLIP 模型下载完成')
+# 验证模型文件是否存在
+import glob
+model_dirs = glob.glob(os.path.join(blip_cache, 'models--Salesforce--*'))
+print(f'找到 {len(model_dirs)} 个模型目录:')
+for model_dir in model_dirs:
+    print(f'  - {model_dir}')
+
+print('✓ BLIP 模型下载和验证完成')
 PYTHON_SCRIPT
     fi
 else

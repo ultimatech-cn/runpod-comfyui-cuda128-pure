@@ -14,9 +14,47 @@ import tempfile
 import socket
 import traceback
 import logging
+import sys
+import warnings
+
+# CRITICAL: Configure numba BEFORE importing any modules that use numba
+# Numba's SSA block analysis and other debug logs can be very verbose
+# These print statements bypass logging, so we need to suppress them early
+
+# Set numba environment variables if not already set
+os.environ.setdefault('NUMBA_DEBUG', '0')
+os.environ.setdefault('NUMBA_DEBUG_TYPEINFER', '0')
+os.environ.setdefault('NUMBA_DEBUG_JIT', '0')
+os.environ.setdefault('NUMBA_DEBUG_FRONTEND', '0')
+os.environ.setdefault('NUMBA_DEBUG_BACKEND', '0')
+os.environ.setdefault('NUMBA_DISABLE_PERFORMANCE_WARNINGS', '1')
+os.environ.setdefault('NUMBA_LOG_LEVEL', 'ERROR')
+
+# Set Hugging Face cache directories for BLIP and other transformers models
+# This ensures models downloaded to Network Volume are used at runtime
+# transformers library stores models in cache_dir/models--Salesforce--blip-vqa-base/ structure
+blip_cache_dir = '/runpod-volume/models/blip'
+if os.path.isdir(blip_cache_dir):
+    os.environ['HF_HUB_CACHE'] = blip_cache_dir
+    os.environ['TRANSFORMERS_CACHE'] = blip_cache_dir
+    os.environ['HF_HOME'] = blip_cache_dir
+    os.environ['HUGGINGFACE_HUB_CACHE'] = blip_cache_dir
+    print(f"worker-comfyui: Set Hugging Face cache directories to {blip_cache_dir}")
+    
+    # Verify model directories exist
+    import glob
+    model_dirs = glob.glob(os.path.join(blip_cache_dir, 'models--Salesforce--*'))
+    if model_dirs:
+        print(f"worker-comfyui: Found {len(model_dirs)} BLIP model directory(ies):")
+        for model_dir in model_dirs:
+            print(f"worker-comfyui:   - {model_dir}")
+    else:
+        print(f"worker-comfyui: WARNING: No BLIP model directories found in {blip_cache_dir}")
+        print(f"worker-comfyui: Please run download-models-to-volume.sh to download BLIP models")
+else:
+    print(f"worker-comfyui: WARNING: BLIP cache directory {blip_cache_dir} does not exist")
 
 # Configure logging to reduce numba verbose output
-# Numba's SSA block analysis and other debug logs can be very verbose
 # Set numba logger to CRITICAL level to suppress all messages including type inference errors
 numba_logger = logging.getLogger('numba')
 numba_logger.setLevel(logging.CRITICAL)
@@ -27,16 +65,53 @@ numba_core_logger.setLevel(logging.CRITICAL)
 
 # Suppress all numba-related loggers (including type inference and compilation messages)
 for logger_name in ['numba', 'numba.core', 'numba.core.ssa', 'numba.core.ir', 'numba.core.types', 
-                     'numba.core.compiler', 'numba.core.errors', 'numba.cpython']:
+                     'numba.core.compiler', 'numba.core.errors', 'numba.cpython', 'numba.core.rewrites',
+                     'numba.core.untyped_passes', 'numba.core.typed_passes']:
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.CRITICAL)
     # Disable propagation to prevent output
     logger.propagate = False
 
 # Suppress numba warnings at Python level
-import warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='numba')
 warnings.filterwarnings('ignore', category=RuntimeWarning, module='numba')
+warnings.filterwarnings('ignore', message='.*numba.*')
+
+# Create a custom stdout filter to suppress numba debug prints
+# This is a workaround for numba's internal print statements that bypass logging
+class NumbaOutputFilter:
+    """Filter out numba debug output from stdout/stderr"""
+    def __init__(self, original_stream):
+        self.original_stream = original_stream
+        self.buffer = ''
+    
+    def write(self, text):
+        # Filter out numba debug patterns
+        if any(pattern in text for pattern in [
+            'SSA block',
+            'dispatch pc',
+            'on stmt:',
+            'State(pc_initial=',
+            'RESUME(arg=',
+            'NOP(arg=',
+            'LOAD_GLOBAL(arg=',
+            '==== SSA block',
+        ]):
+            return  # Suppress numba debug output
+        self.original_stream.write(text)
+        self.original_stream.flush()
+    
+    def flush(self):
+        self.original_stream.flush()
+    
+    def __getattr__(self, name):
+        return getattr(self.original_stream, name)
+
+# Apply filter to stdout and stderr to catch numba's print statements
+if not isinstance(sys.stdout, NumbaOutputFilter):
+    sys.stdout = NumbaOutputFilter(sys.stdout)
+if not isinstance(sys.stderr, NumbaOutputFilter):
+    sys.stderr = NumbaOutputFilter(sys.stderr)
 
 # Time to wait between API check attempts in milliseconds
 COMFY_API_AVAILABLE_INTERVAL_MS = 50
