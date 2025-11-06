@@ -259,6 +259,25 @@ echo "下载 MiniCPM-V-2_6-int4 模型"
 echo "=========================================="
 
 if command -v python3 &> /dev/null; then
+    # 检查并安装 huggingface_hub
+    echo "检查 huggingface_hub 是否已安装..."
+    continue_section=false
+    if ! python3 -c "import huggingface_hub" 2>/dev/null; then
+        echo "huggingface_hub 未安装，正在自动安装..."
+        if pip install --quiet huggingface_hub 2>/dev/null || pip3 install --quiet huggingface_hub 2>/dev/null; then
+            echo "✓ huggingface_hub 安装完成"
+            continue_section=true
+        else
+            echo "✗ 无法安装 huggingface_hub，跳过 MiniCPM-V-2_6-int4 模型下载"
+            echo "  提示: 请手动安装: pip install huggingface_hub"
+        fi
+    else
+        echo "✓ huggingface_hub 已安装"
+        continue_section=true
+    fi
+    
+    if [ "$continue_section" = "true" ]; then
+    
     echo "使用 Python huggingface_hub 下载 MiniCPM-V-2_6-int4 模型..."
     python3 << PYTHON_SCRIPT
 from huggingface_hub import snapshot_download
@@ -277,8 +296,9 @@ try:
     print('✓ MiniCPM-V-2_6-int4 模型下载完成')
 except Exception as e:
     print(f'✗ 下载失败: {e}')
-    print('提示: 请确保已安装 huggingface_hub: pip install huggingface_hub')
+    print('提示: 请检查网络连接或手动安装: pip install huggingface_hub')
 PYTHON_SCRIPT
+    fi
 else
     echo "⚠ Python3 未找到，跳过 MiniCPM-V-2_6-int4 模型下载"
     echo "  提示: 请安装 Python3 和 huggingface_hub: pip install huggingface_hub"
