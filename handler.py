@@ -17,20 +17,26 @@ import logging
 
 # Configure logging to reduce numba verbose output
 # Numba's SSA block analysis and other debug logs can be very verbose
-# Set numba logger to ERROR level to suppress DEBUG/INFO/WARNING messages
+# Set numba logger to CRITICAL level to suppress all messages including type inference errors
 numba_logger = logging.getLogger('numba')
-numba_logger.setLevel(logging.ERROR)
+numba_logger.setLevel(logging.CRITICAL)
 
 # Also suppress numba.core and all numba sub-loggers
 numba_core_logger = logging.getLogger('numba.core')
-numba_core_logger.setLevel(logging.ERROR)
+numba_core_logger.setLevel(logging.CRITICAL)
 
-# Suppress all numba-related loggers
-for logger_name in ['numba', 'numba.core', 'numba.core.ssa', 'numba.core.ir', 'numba.core.types']:
+# Suppress all numba-related loggers (including type inference and compilation messages)
+for logger_name in ['numba', 'numba.core', 'numba.core.ssa', 'numba.core.ir', 'numba.core.types', 
+                     'numba.core.compiler', 'numba.core.errors', 'numba.cpython']:
     logger = logging.getLogger(logger_name)
-    logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.CRITICAL)
     # Disable propagation to prevent output
     logger.propagate = False
+
+# Suppress numba warnings at Python level
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='numba')
+warnings.filterwarnings('ignore', category=RuntimeWarning, module='numba')
 
 # Time to wait between API check attempts in milliseconds
 COMFY_API_AVAILABLE_INTERVAL_MS = 50
