@@ -6,7 +6,7 @@ Run [ComfyUI](https://github.com/comfyanonymous/ComfyUI) workflows as a serverle
 
 ---
 
-[![RunPod](https://api.runpod.io/badge/ultimatech-cn/runpod-comfyui-cuda128)](https://console.runpod.io/hub/ultimatech-cn/runpod-comfyui-cuda128)
+[![Runpod](https://api.runpod.io/badge/ultimatech-cn/runpod-comfyui-cuda128-pure)](https://console.runpod.io/hub/ultimatech-cn/runpod-comfyui-cuda128-pure)
 
 ---
 
