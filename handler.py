@@ -1009,12 +1009,18 @@ def handler(job):
                                 )
 
                                 print(f"worker-comfyui - Uploading {filename} to S3...")
-                                # Use upload_image for both images and videos (RunPod's upload function handles both)
+                                # Use upload_image to upload the file
+                                # Note: RunPod S3-compatible API does NOT support presigned URLs
+                                # The returned URL is the S3 path that requires S3 API Key authentication
                                 s3_url = rp_upload.upload_image(job_id, temp_file_path)
                                 os.remove(temp_file_path)  # Clean up temp file
                                 print(
                                     f"worker-comfyui - Uploaded {filename} to S3: {s3_url}"
                                 )
+                                print(
+                                    f"worker-comfyui - Note: Access this file using S3 API Key credentials (not presigned URL)"
+                                )
+                                
                                 # Append dictionary with filename and URL
                                 output_data.append(
                                     {
