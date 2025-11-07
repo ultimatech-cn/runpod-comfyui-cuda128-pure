@@ -1,7 +1,14 @@
 #!/bin/bash
 # 批量下载模型到 Network Volume 的脚本
-# 专用于 Wan2.2 项目
+# 专用于 Wan2.2 项目（mwmedia 分支）
 # 使用方法：在临时 Pod 中运行此脚本（Network Volume 已挂载）
+#
+# ⚠️ 重要：此脚本仅适用于 mwmedia 分支
+# 使用前请确保已切换到 mwmedia 分支：
+#   git clone https://github.com/ultimatech-cn/runpod-comfyui-cuda128-pure.git
+#   cd runpod-comfyui-cuda128-pure
+#   git checkout mwmedia
+#   bash scripts/download-models-to-volume.sh [VOLUME_PATH]
 #
 # 用法：
 #   bash scripts/download-models-to-volume.sh [VOLUME_PATH]

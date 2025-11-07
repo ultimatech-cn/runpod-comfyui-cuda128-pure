@@ -159,6 +159,12 @@ Network Volume 挂载到容器内的 `/runpod-volume`（Endpoint 中）或 `/wor
    # 克隆仓库（或直接上传脚本文件）
    git clone https://github.com/ultimatech-cn/runpod-comfyui-cuda128-pure.git
    cd runpod-comfyui-cuda128-pure
+   
+   # ⚠️ 重要：切换到正确的分支
+   # 对于 Wan2.2 项目（mwmedia 分支）：
+   git checkout mwmedia
+   # 对于 main 分支（SDXL 等项目）：
+   # git checkout main
    ```
 
 2. **运行下载脚本**：
