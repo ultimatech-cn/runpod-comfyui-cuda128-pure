@@ -1,0 +1,392 @@
+{
+  "input": {
+    "images": [
+      {
+        "name": "test_img.jpg",
+        "image": "https://pic.imgdd.cc/item/69071860c1e67097311264a1.jpg"
+      }
+    ],
+    "workflow": {
+      "80": {
+        "inputs": {
+          "frame_rate": 16,
+          "loop_count": 0,
+          "filename_prefix": "teacache",
+          "format": "video/h264-mp4",
+          "pix_fmt": "yuv420p",
+          "crf": 19,
+          "save_metadata": true,
+          "trim_to_audio": false,
+          "pingpong": false,
+          "save_output": true,
+          "no_preview": false,
+          "images": [
+            "252",
+            0
+          ]
+        },
+        "class_type": "VHS_VideoCombine",
+        "_meta": {
+          "title": "Final 16FPS Video"
+        }
+      },
+      "224": {
+        "inputs": {
+          "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+          "type": "wan",
+          "device": "default"
+        },
+        "class_type": "CLIPLoader",
+        "_meta": {
+          "title": "Load CLIP"
+        }
+      },
+      "225": {
+        "inputs": {
+          "vae_name": "Wan2.1/wan_2.1_vae.safetensors"
+        },
+        "class_type": "VAELoader",
+        "_meta": {
+          "title": "Load VAE"
+        }
+      },
+      "226": {
+        "inputs": {
+          "unet_name": "Wan2.2/wan2.2_i2v_high_noise_14B_fp16.safetensors",
+          "weight_dtype": "default"
+        },
+        "class_type": "UNETLoader",
+        "_meta": {
+          "title": "Load Diffusion Model"
+        }
+      },
+      "227": {
+        "inputs": {
+          "text": "photorealistic, multiscene video,\nThe video starts with a video selfie of Katie01, an adorable alt girl with raven black messy hair she poses in poolside and smiles for the viewer\nJump cut.\nThe scene suddenly changes to a footage shown from a male perspective with his lower body in frame as he lays on a tanning bed on a white towel next to the pool and Katie01 reclines above him, she is completely naked and her medium sized breasts and tiny sized areoles and completely exposed as she's bouncing up and down on the viewer, his penis can be seen penetrating her vagina as they are having cowgirl sex, the scene takes place in the same pool location\nStyle Enhancers: High-contrast monochrome with filmic grain, cool highlights against warm, modern shadows.",
+          "clip": [
+            "224",
+            0
+          ]
+        },
+        "class_type": "CLIPTextEncode",
+        "_meta": {
+          "title": "Positive Prompt"
+        }
+      },
+      "228": {
+        "inputs": {
+          "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+          "clip": [
+            "224",
+            0
+          ]
+        },
+        "class_type": "CLIPTextEncode",
+        "_meta": {
+          "title": "Negative Prompt"
+        }
+      },
+      "252": {
+        "inputs": {
+          "upscale_method": "lanczos",
+          "scale_by": 0.5000000000000001,
+          "image": [
+            "269",
+            0
+          ]
+        },
+        "class_type": "ImageScaleBy",
+        "_meta": {
+          "title": "Upscale Image By"
+        }
+      },
+      "255": {
+        "inputs": {
+          "shift": 8.000000000000002,
+          "model": [
+            "226",
+            0
+          ]
+        },
+        "class_type": "ModelSamplingSD3",
+        "_meta": {
+          "title": "Shift"
+        }
+      },
+      "269": {
+        "inputs": {
+          "samples": [
+            "327",
+            0
+          ],
+          "vae": [
+            "225",
+            0
+          ]
+        },
+        "class_type": "VAEDecode",
+        "_meta": {
+          "title": "VAE Decode"
+        }
+      },
+      "282": {
+        "inputs": {
+          "unet_name": "Wan2.2/wan2.2_i2v_low_noise_14B_fp16.safetensors",
+          "weight_dtype": "default"
+        },
+        "class_type": "UNETLoader",
+        "_meta": {
+          "title": "Load Diffusion Model"
+        }
+      },
+      "292": {
+        "inputs": {
+          "shift": 8.000000000000002,
+          "model": [
+            "282",
+            0
+          ]
+        },
+        "class_type": "ModelSamplingSD3",
+        "_meta": {
+          "title": "Shift"
+        }
+      },
+      "298": {
+        "inputs": {
+          "lora_name": "Wan2.2/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1-high_noise_model.safetensors",
+          "strength_model": 1.0000000000000002,
+          "model": [
+            "255",
+            0
+          ]
+        },
+        "class_type": "LoraLoaderModelOnly",
+        "_meta": {
+          "title": "LoRA 1"
+        }
+      },
+      "302": {
+        "inputs": {
+          "model": [
+            "298",
+            0
+          ]
+        },
+        "class_type": "ModelPassThrough",
+        "_meta": {
+          "title": "ModelPass"
+        }
+      },
+      "303": {
+        "inputs": {
+          "lora_name": "Wan2.2/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1-low_noise_model.safetensors",
+          "strength_model": 1.0000000000000002,
+          "model": [
+            "292",
+            0
+          ]
+        },
+        "class_type": "LoraLoaderModelOnly",
+        "_meta": {
+          "title": "LoRA 1"
+        }
+      },
+      "307": {
+        "inputs": {
+          "model": [
+            "303",
+            0
+          ]
+        },
+        "class_type": "ModelPassThrough",
+        "_meta": {
+          "title": "ModelPass"
+        }
+      },
+      "316": {
+        "inputs": {
+          "sage_attention": "auto",
+          "model": [
+            "302",
+            0
+          ]
+        },
+        "class_type": "PathchSageAttentionKJ",
+        "_meta": {
+          "title": "Patch Sage Attention KJ"
+        }
+      },
+      "317": {
+        "inputs": {
+          "sage_attention": "auto",
+          "model": [
+            "307",
+            0
+          ]
+        },
+        "class_type": "PathchSageAttentionKJ",
+        "_meta": {
+          "title": "Patch Sage Attention KJ"
+        }
+      },
+      "318": {
+        "inputs": {
+          "seed": 838668190641558,
+          "steps": 10,
+          "cfg": 1,
+          "scheduler": "simple",
+          "sampler": "euler",
+          "protect_first_steps": 3,
+          "protect_last_steps": 3,
+          "adaptive_mode": "learning",
+          "smoothing_beta": 0.9990000000000002,
+          "skip_mode": "adaptive",
+          "skip_indices": "",
+          "anchor_interval": 4,
+          "max_consecutive_skips": 4,
+          "start_at_step": 0,
+          "end_at_step": 5,
+          "add_noise": 0,
+          "noise_type": "whitened",
+          "denoise": 1,
+          "verbose": false,
+          "no_grad": true,
+          "official_comfy": true,
+          "model": [
+            "316",
+            0
+          ],
+          "positive": [
+            "329",
+            0
+          ],
+          "negative": [
+            "329",
+            1
+          ],
+          "latent_image": [
+            "329",
+            2
+          ]
+        },
+        "class_type": "FSamplerAdvanced",
+        "_meta": {
+          "title": "FSampler Advanced"
+        }
+      },
+      "327": {
+        "inputs": {
+          "seed": 193450782874321,
+          "steps": 10,
+          "cfg": 1,
+          "scheduler": "simple",
+          "sampler": "euler",
+          "protect_first_steps": 6,
+          "protect_last_steps": 6,
+          "adaptive_mode": "learning",
+          "smoothing_beta": 0.9990000000000002,
+          "skip_mode": "adaptive",
+          "skip_indices": "",
+          "anchor_interval": 4,
+          "max_consecutive_skips": 4,
+          "start_at_step": 5,
+          "end_at_step": 10,
+          "add_noise": 0,
+          "noise_type": "whitened",
+          "denoise": 1,
+          "verbose": false,
+          "no_grad": true,
+          "official_comfy": true,
+          "model": [
+            "317",
+            0
+          ],
+          "positive": [
+            "329",
+            0
+          ],
+          "negative": [
+            "329",
+            1
+          ],
+          "latent_image": [
+            "318",
+            0
+          ]
+        },
+        "class_type": "FSamplerAdvanced",
+        "_meta": {
+          "title": "FSampler Advanced"
+        }
+      },
+      "329": {
+        "inputs": {
+          "width": 480,
+          "height": 832,
+          "length": 81,
+          "batch_size": 1,
+          "positive": [
+            "227",
+            0
+          ],
+          "negative": [
+            "228",
+            0
+          ],
+          "vae": [
+            "225",
+            0
+          ],
+          "clip_vision_output": [
+            "331",
+            0
+          ],
+          "start_image": [
+            "332",
+            0
+          ]
+        },
+        "class_type": "WanImageToVideo",
+        "_meta": {
+          "title": "WanImageToVideo"
+        }
+      },
+      "330": {
+        "inputs": {
+          "clip_name": "wan/clip_vision_h.safetensors"
+        },
+        "class_type": "CLIPVisionLoader",
+        "_meta": {
+          "title": "Load CLIP Vision"
+        }
+      },
+      "331": {
+        "inputs": {
+          "crop": "center",
+          "clip_vision": [
+            "330",
+            0
+          ],
+          "image": [
+            "332",
+            0
+          ]
+        },
+        "class_type": "CLIPVisionEncode",
+        "_meta": {
+          "title": "CLIP Vision Encode"
+        }
+      },
+      "332": {
+        "inputs": {
+          "image": "test_img.jpg"
+        },
+        "class_type": "LoadImage",
+        "_meta": {
+          "title": "Load Image"
+        }
+      }
+    }
+  }
+}

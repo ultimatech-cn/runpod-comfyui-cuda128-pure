@@ -77,6 +77,8 @@ RUN git config --global --add safe.directory '*' && \
     rm -rf comfyui-kjnodes && \
     git clone --depth 1 https://github.com/kijai/ComfyUI-KJNodes.git comfyui-kjnodes && \
     (cd comfyui-kjnodes && [ ! -f requirements.txt ] || python3 -m pip install --no-cache-dir -r requirements.txt || true) && \
+    # Install sageattention module required by PathchSageAttentionKJ node
+    python3 -m pip install --no-cache-dir sageattention || true && \
     \
     # Install ComfyUI-VideoHelperSuite
     rm -rf comfyui-videohelpersuite && \
