@@ -63,9 +63,10 @@ docker-bake.hcl
 scripts/
 
 # Source files (if handler.py is the only one needed)
-# But we need extra_model_paths.yaml for Network Volume support
+# But we need extra_model_paths.yaml and start.sh for Network Volume support
 src/*
 !src/extra_model_paths.yaml
+!src/start.sh
 
 # Requirements (already in base image or handled in Dockerfile)
 requirements.txt
