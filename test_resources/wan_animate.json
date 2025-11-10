@@ -35,7 +35,7 @@
       },
       "226": {
         "inputs": {
-          "unet_name": "Wan2.2/wan2.2_animate_14B_bf16.safetensors",
+          "unet_name": "Wan2.2/Wan2_2-Animate-14B_fp8_scaled_e4m3fn_KJ_v2.safetensors",
           "weight_dtype": "default"
         },
         "class_type": "UNETLoader",
