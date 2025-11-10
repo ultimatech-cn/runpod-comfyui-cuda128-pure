@@ -62,7 +62,18 @@ comfy-manager-set-mode offline || echo "worker-comfyui - Could not set ComfyUI-M
 # This script runs in Endpoint, so it checks /runpod-volume
 # Models downloaded in Temporary Pod to /workspace/models/ will be accessible
 # at /runpod-volume/models/ in Endpoint (same Volume, different mount point)
+
+# Debug: Check if Network Volume is mounted
+echo "worker-comfyui: Checking Network Volume mount..."
+if [ -d "/runpod-volume" ]; then
+    echo "worker-comfyui: /runpod-volume exists"
+    ls -la /runpod-volume/ | head -5 || echo "worker-comfyui: Cannot list /runpod-volume"
+else
+    echo "worker-comfyui: WARNING: /runpod-volume does not exist"
+fi
+
 if [ -d "/runpod-volume/models" ]; then
+    echo "worker-comfyui: /runpod-volume/models exists, setting up symlinks"
     echo "worker-comfyui: Setting up model directory symlinks from Network Volume"
     
     # Function to create symlink for a model directory
@@ -208,6 +219,12 @@ if [ -d "/runpod-volume/models" ]; then
         echo "worker-comfyui: WARNING: antelopev2 model not found in Network Volume"
         echo "worker-comfyui: PuLID_ComfyUI will attempt to download it automatically"
     fi
+fi
+
+# Remove or backup extra_model_paths.yaml if it exists (we use symlinks instead)
+if [ -f "/comfyui/extra_model_paths.yaml" ]; then
+    echo "worker-comfyui: Found extra_model_paths.yaml, backing it up (using symlinks instead)"
+    mv /comfyui/extra_model_paths.yaml /comfyui/extra_model_paths.yaml.backup 2>/dev/null || true
 fi
 
 echo "worker-comfyui: Starting ComfyUI"
