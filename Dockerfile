@@ -125,10 +125,10 @@ RUN git config --global --add safe.directory '*' && \
     git clone --depth 1 https://github.com/kijai/ComfyUI-WanAnimatePreprocess.git ComfyUI-WanAnimatePreprocess && \
     (cd ComfyUI-WanAnimatePreprocess && [ ! -f requirements.txt ] || python3 -m pip install --no-cache-dir -r requirements.txt || true) && \
     \
-    # Install ComfyUI-Easy-Use
-    rm -rf ComfyUI-Easy-Use && \
-    git clone --depth 1 https://github.com/yolain/ComfyUI-Easy-Use.git ComfyUI-Easy-Use && \
-    (cd ComfyUI-Easy-Use && [ ! -f requirements.txt ] || python3 -m pip install --no-cache-dir -r requirements.txt || true) && \
+    # Install ComfyUI-Logic
+    rm -rf ComfyUI-Logic && \
+    git clone --depth 1 https://github.com/theUpsider/ComfyUI-Logic.git ComfyUI-Logic && \
+    (cd ComfyUI-Logic && [ ! -f requirements.txt ] || python3 -m pip install --no-cache-dir -r requirements.txt || true) && \
     \
     cd $COMFYUI_PATH
 
